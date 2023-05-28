@@ -12,7 +12,7 @@ using System.Data;
 
 namespace IHW4
 {
-    public static class DBManager
+    public static class AuthManager
     {
         private static SQLiteConnection connection;
         private static SQLiteCommand command;
@@ -33,9 +33,9 @@ namespace IHW4
             }
         }
 
-        static DBManager()
+        static AuthManager()
         {
-            if (Connect("auth.sqlite"))
+            if (Connect("db.sqlite"))
             {
                 command = new SQLiteCommand(connection);
                 command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
@@ -49,11 +49,11 @@ namespace IHW4
                 command.ExecuteNonQuery();
 
                 command.CommandText = "CREATE TABLE IF NOT EXISTS session (" +
-                                        "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-                                        "user_id INTEGER NOT NULL," +
-                                        "session_token VARCHAR(255) NOT NULL," +
-                                        "expires_at TIMESTAMP NOT NULL," +
-                                        "FOREIGN KEY (user_id) REFERENCES users(id));";
+                                      "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
+                                      "user_id INTEGER NOT NULL," +
+                                      "session_token VARCHAR(255) NOT NULL," +
+                                      "expires_at TIMESTAMP NOT NULL," +
+                                      "FOREIGN KEY (user_id) REFERENCES users(id));";
                 command.ExecuteNonQuery();
             }
         }

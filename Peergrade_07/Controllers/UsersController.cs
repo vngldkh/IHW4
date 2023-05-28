@@ -15,7 +15,6 @@ namespace IHW4.Controllers
     [Route("/api/[controller]")]
     public class UsersController : Controller
     {
-        public static List<User> Users;
         /// <summary>
         /// Регистрация нового пользователя
         /// </summary>
@@ -45,7 +44,7 @@ namespace IHW4.Controllers
             {
                 return new BadRequestObjectResult("Некорректная роль");
             }
-            if (DBManager.CreateUser(userName, email, password, role))
+            if (AuthManager.CreateUser(userName, email, password, role))
             {
                 return new OkObjectResult("Регистрация прошла успешно");
             }
@@ -67,7 +66,7 @@ namespace IHW4.Controllers
             String hash;
             Int64 id;
 
-            (hash, id)  = DBManager.CheckUser(email);
+            (hash, id)  = AuthManager.CheckUser(email);
             if (hash is null)
             {
                 return new BadRequestObjectResult("Пользователя с таким адресом электронной почты не существует");
@@ -78,7 +77,7 @@ namespace IHW4.Controllers
             }
 
             var token = JWTGenerator.Generate();
-            if (DBManager.CreateSession(id, token))
+            if (AuthManager.CreateSession(id, token))
             {
                 return new OkObjectResult($"Вход прошёл успешно. Сгенерированный токен: {token.token}");
             }
@@ -88,12 +87,12 @@ namespace IHW4.Controllers
         [HttpGet("user_info/{sessionToken}")]
         public IActionResult Get(String sessionToken)
         {
-            Int64 userId = DBManager.CheckSession(sessionToken);
+            Int64 userId = AuthManager.CheckSession(sessionToken);
             if (userId < 0)
             {
                 return new BadRequestObjectResult("Нет активной сессии с таким токеном");
             }
-            return new OkObjectResult(DBManager.GetUserInfo(userId));
+            return new OkObjectResult(AuthManager.GetUserInfo(userId));
         }
     }
 }

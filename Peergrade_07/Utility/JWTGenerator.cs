@@ -11,7 +11,7 @@ namespace IHW4
     public static class JWTGenerator
     {
         const string KEY = "mysupersecret_secretkey!IT_IS_REALLY_SUPER_SECRET!TRUST_ME";   // ключ для шифрации
-        public const int LIFETIME = 2; // время жизни токена - 2 минуты
+        public const int LIFETIME = 5; // время жизни токена - 5 минут
         private static SymmetricSecurityKey GetSymmetricSecurityKey()
         {
             return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(KEY));

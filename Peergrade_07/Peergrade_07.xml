@@ -4,65 +4,10 @@
         <name>IHW4</name>
     </assembly>
     <members>
-        <member name="T:IHW4.Controllers.LettersController">
+        <member name="T:IHW4.Controllers.DishController">
             <summary>
-            Контроллер сообщений.
+            Контроллер пользователей.
             </summary>
-        </member>
-        <member name="P:IHW4.Controllers.LettersController.Letters">
-            <summary>
-            Список сообщений.
-            </summary>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.Get">
-            <summary>
-            HttpGet метод для получения полного списка сообщений.
-            </summary>
-            <returns> Полный список сообщений. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.Get(System.String,System.String)">
-            <summary>
-            HttpGet метод для получения списка сообщений по отправителю и получателю.
-            </summary>
-            <param name="senderId"> Email отправителя. </param>
-            <param name="receiverId"> Email получателя. </param>
-            <returns> Список сообщений от заданного отправителя к заданному получателю. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.GetBySender(System.String)">
-            <summary>
-            HttpGet метод для получения списка сообщений по отправителю.
-            </summary>
-            <param name="senderId"> Email отправителя. </param>
-            <returns> Список сообщений от заданного отправителя. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.GetByReceiver(System.String)">
-            <summary>
-            HttpGet метод для получения списка сообщений по получателю.
-            </summary>
-            <param name="receiverId"> Email получателя. </param>
-            <returns> Список сообщений заданному получателю. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.Post(System.String,System.String,System.String,System.String)">
-            <summary>
-            HttpPost метод для отправки нового сообщения.
-            </summary>
-            <param name="subject"> Тема сообщения. </param>
-            <param name="senderId"> Email отправителя. </param>
-            <param name="receiverId"> Email получателя. </param>
-            <param name="message"> Текст сообщения. </param>
-            <returns> Результат запроса. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.Post">
-            <summary>
-            HttpPost запрос для отправки нового случайно сгенерированного сообщения.
-            </summary>
-            <returns> Результат запроса. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.LettersController.Clear">
-            <summary>
-            HttpDelete метод, который очищает список сообщений.
-            </summary>
-            <returns> Результат запроса. </returns>
         </member>
         <member name="T:IHW4.Controllers.UsersController">
             <summary>
@@ -85,50 +30,10 @@
             </summary>
             <returns> Результат запроса. </returns>
         </member>
-        <member name="T:IHW4.Models.Letter">
+        <member name="T:IHW4.Models.Dish">
             <summary>
-            Класс, описывающий сообщение.
+            Класс, описывающий блюдо.
             </summary>
-        </member>
-        <member name="P:IHW4.Models.Letter.Subject">
-            <summary>
-            Тема сообщения.
-            </summary>
-        </member>
-        <member name="P:IHW4.Models.Letter.Message">
-            <summary>
-            Текст сообщения.
-            </summary>
-        </member>
-        <member name="P:IHW4.Models.Letter.SenderId">
-            <summary>
-            Идентификатор отправителя.
-            </summary>
-        </member>
-        <member name="P:IHW4.Models.Letter.ReceiverId">
-            <summary>
-            Идентификатор получателя.
-            </summary>
-        </member>
-        <member name="M:IHW4.Models.Letter.#ctor">
-            <summary>
-            Пустой конструктор.
-            </summary>
-        </member>
-        <member name="M:IHW4.Models.Letter.#ctor(System.String,System.String,System.String,System.String)">
-            <summary>
-            Конструктор сообщения.
-            </summary>
-            <param name="sbj"> Тема. </param>
-            <param name="message"> Текст. </param>
-            <param name="senderId"> Отправитель. </param>
-            <param name="receiverId"> Получатель. </param>
-        </member>
-        <member name="M:IHW4.Models.Letter.GenerateLetter">
-            <summary>
-            Метод, позволяющий случайным образом сгенерировать сообщение.
-            </summary>
-            <returns> Сгенерированное сообщение. </returns>
         </member>
         <member name="T:IHW4.Models.User">
             <summary>
@@ -163,28 +68,6 @@
             </summary>
             <param name="obj"> Объект, с которым происходит сравнение. </param>
             <returns> True, если объекты равны, false - в ином случае. </returns>
-        </member>
-        <member name="T:IHW4.Serializer">
-            <summary>
-            Статический класс, позволяющий сериализовывать и десериализовывать объекты.
-            </summary>
-        </member>
-        <member name="M:IHW4.Serializer.Serialize``1(System.Collections.Generic.List{``0},System.String)">
-            <summary>
-            Обобщённый метод для сериализации списка обхектов.
-            </summary>
-            <param name="list"> Список объектов. </param>
-            <param name="fileName"> Путь к файлу. </param>
-            <typeparam name="T"> Тип элементов списка. </typeparam>
-            <returns> True, если сериализация прошла успешно, false - в ином случае. </returns>
-        </member>
-        <member name="M:IHW4.Serializer.Deserialize``1(System.String)">
-            <summary>
-            Обобщённый метод для десериализации списка обхектов.
-            </summary>
-            <param name="fileName"> Путь к файлу, хранящему сериализованный объект. </param>
-            <typeparam name="T"> Тип элементов списка. </typeparam>
-            <returns> Список объектов заданного типа. Пустой, если возникло исключение. </returns>
         </member>
     </members>
 </doc>
