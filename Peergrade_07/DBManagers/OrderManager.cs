@@ -12,17 +12,20 @@ using System.Data;
 
 namespace IHW4
 {
+    /// <summary>
+    /// Класс-посредник для взаимодействия с таблицами БД, связанными с заказами
+    /// </summary>
     public static class OrderManager
     {
-        private static SQLiteConnection connection;
+        private static SQLiteConnection _connection;
         private static SQLiteCommand command;
 
         private static bool Connect(string fileName)
         {
             try
             {
-                connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
-                connection.Open();
+                _connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
+                _connection.Open();
                 return true;
             }
             catch (SQLiteException ex)
@@ -36,7 +39,7 @@ namespace IHW4
         {
             if (Connect("db.sqlite"))
             {
-                command = new SQLiteCommand(connection);
+                command = new SQLiteCommand(_connection);
                 command.CommandText = "CREATE TABLE IF NOT EXISTS orders (" +
                                       "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                                       "user_id INT NOT NULL," +
@@ -59,6 +62,11 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Создание нового блюда заказа
+        /// </summary>
+        /// <param name="dish"> Информация о блюде </param>
+        /// <returns> Индикатор операции добавления строки в таблицу </returns>
         public static bool CreateOrderDish(OrderDish dish)
         {
             command.CommandText = "INSERT INTO order_dish (order_id, dish_id, quantity, price)" +
@@ -79,6 +87,11 @@ namespace IHW4
             }
         }
         
+        /// <summary>
+        /// Создание нового заказа
+        /// </summary>
+        /// <param name="order"> Информация о заказе </param>
+        /// <returns> Идентификатор созданного заказа (или -1, если создать не удалось) </returns>
         public static Int64 CreateOrder(Order order)
         {
             command.CommandText = "INSERT INTO orders (user_id, status, special_requests)" +
@@ -99,6 +112,11 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Получение информации о заказе
+        /// </summary>
+        /// <param name="id"> Идентификатор заказа </param>
+        /// <returns> Информация о заказе (или null, если он не был найден в таблице) </returns>
         public static Order GetOrderInfo(Int64 id)
         {
             command.CommandText = "SELECT * FROM orders WHERE id = :id";
@@ -120,6 +138,10 @@ namespace IHW4
                                 data.Select()[0].Field<DateTime>("updated_at"));
         }
 
+        /// <summary>
+        /// Получение списка ожидающих заказов
+        /// </summary>
+        /// <returns> Список идентификаторов </returns>
         public static List<Int64> GetAwaitingOrders()
         {
             command.CommandText = "SELECT * FROM orders WHERE status = 'в ожидании'";
@@ -130,6 +152,12 @@ namespace IHW4
             return (from DataRow row in data.Rows select row.Field<Int64>("id")).ToList();
         }
 
+        /// <summary>
+        /// Обновление состояния заказа
+        /// </summary>
+        /// <param name="id"> Идентификатор заказа </param>
+        /// <param name="state"> Новое состояние </param>
+        /// <returns> Индикатор операции </returns>
         public static bool UpdateOrderState(Int64 id, String state)
         {
             command.CommandText = "UPDATE orders SET status = :state, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
