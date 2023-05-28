@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.IO;
 using IHW4.Models;
 using System.Data.SQLite;
-using System.Security.Cryptography;
-using System.Text;
 using System.Data;
 
 namespace IHW4
 {
+    /// <summary>
+    /// Класс-посредник для взаимодействия с таблицами БД, связанными с сервисом авторизации
+    /// </summary>
     public static class AuthManager
     {
-        private static SQLiteConnection connection;
+        private static SQLiteConnection _connection;
         private static SQLiteCommand command;
 
 
@@ -22,8 +18,8 @@ namespace IHW4
         {
             try
             {
-                connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
-                connection.Open();
+                _connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
+                _connection.Open();
                 return true;
             }
             catch (SQLiteException ex)
@@ -37,7 +33,7 @@ namespace IHW4
         {
             if (Connect("db.sqlite"))
             {
-                command = new SQLiteCommand(connection);
+                command = new SQLiteCommand(_connection);
                 command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
                                     "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                                     "username VARCHAR(50) NOT NULL UNIQUE," +
@@ -58,6 +54,14 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Создание нового аккаунта
+        /// </summary>
+        /// <param name="userName"> Имя пользователя </param>
+        /// <param name="email"> Адрес электронной почты </param>
+        /// <param name="password"> Пароль (нехэшированный) </param>
+        /// <param name="role"> Роль пользователя </param>
+        /// <returns> Индикатор операции </returns>
         public static bool CreateUser(String userName, String email, String password, String role)
         {
             try
@@ -78,6 +82,13 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Получение информации о пользователе (необходимой для авторизации)
+        /// </summary>
+        /// <param name="email"> Адрес электронной почты </param>
+        /// <returns>
+        /// Хэш пароля и идентификатор пользователя (или (null, -1) если такого пользователя нет в таблице)
+        /// </returns>
         public static (String, Int64) CheckUser(String email)
         {
             command.CommandText = "SELECT * FROM users WHERE email = :email";
@@ -94,6 +105,12 @@ namespace IHW4
             return (data.Select()[0].Field<String>("password_hash"), data.Select()[0].Field<Int64>("id"));
         }
 
+        /// <summary>
+        /// Создание новой сессии
+        /// </summary>
+        /// <param name="userId"> Идентификатор пользователя </param>
+        /// <param name="token"> Сгенерированный токен </param>
+        /// <returns> Индикатор операции </returns>
         public static bool CreateSession(Int64 userId, TokenInfo token)
         {
             try
@@ -114,6 +131,11 @@ namespace IHW4
             }
         } 
 
+        /// <summary>
+        /// Проверка токена на наличие активной сессии
+        /// </summary>
+        /// <param name="token"> Токен сессии </param>
+        /// <returns> Идентификатор авторизированного пользователя (или -1 если такой активной сессии нет) </returns>
         public static Int64 CheckSession(String token)
         {
             command.CommandText = "SELECT * FROM session WHERE session_token = :token AND expires_at > CURRENT_TIMESTAMP";
@@ -130,6 +152,11 @@ namespace IHW4
             return data.Select()[0].Field<Int64>("user_id");
         }
 
+        /// <summary>
+        /// Получение информации о пользователе
+        /// </summary>
+        /// <param name="id"> Идентификатор пользователя </param>
+        /// <returns> Информация о пользователе </returns>
         public static User GetUserInfo(Int64 id)
         {
             command.CommandText = "SELECT * FROM users WHERE id = :id";
