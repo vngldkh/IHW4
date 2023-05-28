@@ -4,17 +4,6 @@
         <name>IHW4</name>
     </assembly>
     <members>
-        <member name="T:IHW4.Controllers.GeneralController">
-            <summary>
-            Общий контроллер.
-            </summary>
-        </member>
-        <member name="M:IHW4.Controllers.GeneralController.Init">
-            <summary>
-            HttpPost метод для инициализации списков.
-            </summary>
-            <returns> Результат запроса. </returns>
-        </member>
         <member name="T:IHW4.Controllers.LettersController">
             <summary>
             Контроллер сообщений.
@@ -80,49 +69,19 @@
             Контроллер пользователей.
             </summary>
         </member>
-        <member name="P:IHW4.Controllers.UsersController.Users">
+        <member name="M:IHW4.Controllers.UsersController.Post(System.String,System.String,System.String,System.String)">
             <summary>
-            Список пользователей.
+            Регистрация нового пользователя
             </summary>
-        </member>
-        <member name="M:IHW4.Controllers.UsersController.Get">
-            <summary>
-            HttpGet метод для получения полного списка пользователей.
-            </summary>
-            <returns> Полный список пользователей. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.UsersController.Get(System.Int32,System.Int32)">
-            <summary>
-            HttpGet метод для получения среза списка пользователей.
-            </summary>
-            <param name="limit"> Максимольный размер среза. </param>
-            <param name="offset"> Отступ от начала списка. </param>
-            <returns> Срез списка пользователей. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.UsersController.Get(System.String)">
-            <summary>
-            HttpGet метод для получения информации о пользователе по идентификатору (email).
-            </summary>
-            <param name="email"> Идентификатор пользователя. </param>
-            <returns> Информация о пользователе с данным идентификатором. </returns>
+            <param name="userName">Имя пользователя</param>
+            <param name="email">Адрес электронной почты</param>
+            <param name="password">Пароль</param>
+            <param name="role">Роль (chef, manager или customer)</param>
+            <returns></returns>
         </member>
         <member name="M:IHW4.Controllers.UsersController.Post(System.String,System.String)">
             <summary>
-            HttpPost метод для регистрации нового пользователя. 
-            </summary>
-            <param name="email"> Email пользователя (идентификатор). </param>
-            <param name="userName"> Имя пользователя. </param>
-            <returns> Результат запроса. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.UsersController.Post">
-            <summary>
-            HttpPost метод для регистрации случайно сгенерированного пользователя. 
-            </summary>
-            <returns> Результат запроса. </returns>
-        </member>
-        <member name="M:IHW4.Controllers.UsersController.Clear">
-            <summary>
-            HttpDelete метод, который очищает список пользователей.
+            Авторизация пользователя
             </summary>
             <returns> Результат запроса. </returns>
         </member>
@@ -191,7 +150,7 @@
             Пустой конструктор.
             </summary>
         </member>
-        <member name="M:IHW4.Models.User.#ctor(System.String,System.String)">
+        <member name="M:IHW4.Models.User.#ctor(System.String,System.String,System.String)">
             <summary>
             Конструктор пользователя.
             </summary>
@@ -204,25 +163,6 @@
             </summary>
             <param name="obj"> Объект, с которым происходит сравнение. </param>
             <returns> True, если объекты равны, false - в ином случае. </returns>
-        </member>
-        <member name="M:IHW4.Models.User.GetHashCode">
-            <summary>
-            Изменение рализация метода получения хэш-кода (для корректного сравнения объектов).
-            </summary>
-            <returns> Длина идентификатора. </returns>
-        </member>
-        <member name="M:IHW4.Models.User.GenerateUser">
-            <summary>
-            Метод позволяет случайным образом сгенерировать пользователя.
-            </summary>
-            <returns> Сгенерированный пользователь. </returns>
-        </member>
-        <member name="M:IHW4.Models.User.CompareTo(System.Object)">
-            <summary>
-            Реализация интерфейса IComparable (для корректной сортировки).
-            </summary>
-            <param name="obj"> Объект, с которым происходит сравнение. </param>
-            <returns> Результат сравнения. </returns>
         </member>
         <member name="T:IHW4.Serializer">
             <summary>

@@ -87,7 +87,7 @@ namespace IHW4.Controllers
         {
             if (UsersController.Users.SingleOrDefault(u => u.Email == senderId) == null ||
                 UsersController.Users.SingleOrDefault(u => u.Email == receiverId) == null)
-                return NotFound();
+                return NotFound("");
             Letters.Add(new Letter(subject, message, senderId, receiverId));
             if (!Serializer.Serialize(Letters, "Info/Letters.json"))
                 return new BadRequestResult();

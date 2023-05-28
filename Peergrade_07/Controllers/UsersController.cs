@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IHW4.Models;
+using System.Text.RegularExpressions;
 
 namespace IHW4.Controllers
 {
@@ -14,99 +15,85 @@ namespace IHW4.Controllers
     [Route("/api/[controller]")]
     public class UsersController : Controller
     {
+        public static List<User> Users;
         /// <summary>
-        /// Список пользователей.
+        /// Регистрация нового пользователя
         /// </summary>
-        public static List<User> Users { get; } =  Serializer.Deserialize<User>("Info/Users.json");
-
-        /// <summary>
-        /// HttpGet метод для получения полного списка пользователей.
-        /// </summary>
-        /// <returns> Полный список пользователей. </returns>
-        [HttpGet("request/all")]
-        public IEnumerable<User> Get()
-            => Users;
-        
-        /// <summary>
-        /// HttpGet метод для получения среза списка пользователей.
-        /// </summary>
-        /// <param name="limit"> Максимольный размер среза. </param>
-        /// <param name="offset"> Отступ от начала списка. </param>
-        /// <returns> Срез списка пользователей. </returns>
-        [HttpGet("request/segment:{limit:int};{offset:int}")]
-        public IActionResult Get(int limit, int offset)
+        /// <param name="userName">Имя пользователя</param>
+        /// <param name="email">Адрес электронной почты</param>
+        /// <param name="password">Пароль</param>
+        /// <param name="role">Роль (chef, manager или customer)</param>
+        /// <returns></returns>
+        [HttpPost("register")]
+        public IActionResult Post(string userName, string email, string password, string role)
         {
-            if (offset < 0 || limit <= 0)
-                return new BadRequestResult();
-            return new OkObjectResult(Users.ToArray()[offset..Math.Min(limit + offset, Users.Count)]);
-        }
-
-        /// <summary>
-        /// HttpGet метод для получения информации о пользователе по идентификатору (email).
-        /// </summary>
-        /// <param name="email"> Идентификатор пользователя. </param>
-        /// <returns> Информация о пользователе с данным идентификатором. </returns>
-        [HttpGet("request/by_email:{email}")]
-        public IActionResult Get(string email)
-        {
-            var user = Users.SingleOrDefault(u => u.Email == email);
-
-            if (user == null)
-                return NotFound();
-
-            return new OkObjectResult(user);
-        }
-
-        /// <summary>
-        /// HttpPost метод для регистрации нового пользователя. 
-        /// </summary>
-        /// <param name="email"> Email пользователя (идентификатор). </param>
-        /// <param name="userName"> Имя пользователя. </param>
-        /// <returns> Результат запроса. </returns>
-        [HttpPost("add:{email};{userName}")]
-        public IActionResult Post(string email, string userName)
-        {
-            var user = new User(email, userName);
-            if (Users.Contains(user))
-                return new ConflictResult();
-            Users.Add(user);
-            Users.Sort();
-            if (!Serializer.Serialize(Users, "Info/Users.json"))
-                return new BadRequestResult();
-            return new OkObjectResult(Users);
-        }
-
-        /// <summary>
-        /// HttpPost метод для регистрации случайно сгенерированного пользователя. 
-        /// </summary>
-        /// <returns> Результат запроса. </returns>
-        [HttpPost("add:random")]
-        public IActionResult Post()
-        {
-            User user;
-            do
+            Regex regex = new Regex("^\\S+@\\S+\\.\\S+$");
+            String[] validRoles = {"chef", "manager", "customer"};
+            if (userName is null || userName.Length == 0)
             {
-                user = Models.User.GenerateUser();
-            } while (Users.Contains(user));
-            Users.Add(user);
-            Users.Sort();
-            if (Serializer.Serialize(Users, "Info/Users.json"))
-                return new OkObjectResult(user);
-            Users.Remove(user);
-            return new BadRequestResult();
+                return new BadRequestObjectResult("Имя пользователя не может быть пустым");
+            }
+            if (email is null || !regex.IsMatch(email))
+            {
+                return new BadRequestObjectResult("Некорректный адрес электронной почты");
+            }
+            if (password is null)
+            {
+                return new BadRequestObjectResult("Пароль не может быть пустым");
+            }
+            if (role is null || !validRoles.Contains(role))
+            {
+                return new BadRequestObjectResult("Некорректная роль");
+            }
+            if (DBManager.CreateUser(userName, email, password, role))
+            {
+                return new OkObjectResult("Регистрация прошла успешно");
+            }
+            return new BadRequestObjectResult("Пользователь с таким именем или адресом электронной почты уже существует");
         }
 
         /// <summary>
-        /// HttpDelete метод, который очищает список пользователей.
+        /// Авторизация пользователя
         /// </summary>
         /// <returns> Результат запроса. </returns>
-        [HttpDelete("clear")]
-        public IActionResult Clear()
+        [HttpPost("login")]
+        public IActionResult Post(String email, String password)
         {
-            if (!Serializer.Serialize(new List<User>(), "Info/Users.json"))
-                return new BadRequestResult();
-            Users.Clear();
-            return new OkResult();
+            if (User is null || password is null)
+            {
+                return new BadRequestObjectResult("Поля не могут быть пустыми");
+            }
+
+            String hash;
+            Int64 id;
+
+            (hash, id)  = DBManager.CheckUser(email);
+            if (hash is null)
+            {
+                return new BadRequestObjectResult("Пользователя с таким адресом электронной почты не существует");
+            }
+            if (!Hasher.CheckPassword(password, hash))
+            {
+                return new BadRequestObjectResult("Неверный пароль");
+            }
+
+            var token = JWTGenerator.Generate();
+            if (DBManager.CreateSession(id, token))
+            {
+                return new OkObjectResult($"Вход прошёл успешно. Сгенерированный токен: {token.token}");
+            }
+            return new BadRequestObjectResult("Не удалось создать сессию");
+        }
+
+        [HttpGet("user_info/{sessionToken}")]
+        public IActionResult Get(String sessionToken)
+        {
+            Int64 userId = DBManager.CheckSession(sessionToken);
+            if (userId < 0)
+            {
+                return new BadRequestObjectResult("Нет активной сессии с таким токеном");
+            }
+            return new OkObjectResult(DBManager.GetUserInfo(userId));
         }
     }
 }
