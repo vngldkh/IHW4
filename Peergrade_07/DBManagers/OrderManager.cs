@@ -58,6 +58,93 @@ namespace IHW4
                 command.ExecuteNonQuery();
             }
         }
+
+        public static bool CreateOrderDish(OrderDish dish)
+        {
+            command.CommandText = "INSERT INTO order_dish (order_id, dish_id, quantity, price)" +
+                                  "VALUES (:order_id, :dish_id, :quantity, :price)";
+            command.Parameters.AddWithValue("order_id", dish.OrderID);
+            command.Parameters.AddWithValue("dish_id", dish.DishID);
+            command.Parameters.AddWithValue("quantity", dish.Quantity);
+            command.Parameters.AddWithValue("price", dish.Price);
+            
+            try
+            {
+                command.ExecuteNonQuery();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         
+        public static Int64 CreateOrder(Order order)
+        {
+            command.CommandText = "INSERT INTO orders (user_id, status, special_requests)" +
+                                  "VALUES (:user_id, :status, :special_requests);";
+            command.Parameters.AddWithValue("user_id", order.UserID);
+            command.Parameters.AddWithValue("status", order.Status);
+            command.Parameters.AddWithValue("special_requests", order.SpecialRequests);
+            
+            try
+            {
+                command.ExecuteNonQuery();
+                command.CommandText = "SELECT last_insert_rowid()";
+                return (Int64) command.ExecuteScalar();
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public static Order GetOrderInfo(Int64 id)
+        {
+            command.CommandText = "SELECT * FROM orders WHERE id = :id";
+            command.Parameters.AddWithValue("id", id);
+
+            DataTable data = new DataTable();
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(data);
+            
+            if (data.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            return new Order(data.Select()[0].Field<int>("user_id"),
+                                data.Select()[0].Field<string>("status"),
+                                data.Select()[0].Field<string>("special_requests"),
+                                data.Select()[0].Field<DateTime>("created_at"),
+                                data.Select()[0].Field<DateTime>("updated_at"));
+        }
+
+        public static List<Int64> GetAwaitingOrders()
+        {
+            command.CommandText = "SELECT * FROM orders WHERE status = 'в ожидании'";
+            DataTable data = new DataTable();
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(data);
+
+            return (from DataRow row in data.Rows select row.Field<Int64>("id")).ToList();
+        }
+
+        public static bool UpdateOrderState(Int64 id, String state)
+        {
+            command.CommandText = "UPDATE orders SET status = :state, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
+            command.Parameters.AddWithValue("state", state);
+            command.Parameters.AddWithValue("id", id);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return true;
+            } 
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

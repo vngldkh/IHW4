@@ -102,7 +102,7 @@ namespace IHW4
             int quantity = data.Select()[0].Field<int>("quantity");
             int newQuantity = Math.Max(0, quantity + diff);
             
-            command.CommandText = "UPDATE dish SET quantity = :quantity WHERE id = :id";
+            command.CommandText = "UPDATE dish SET quantity = :quantity, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
             command.Parameters.AddWithValue("quantity", newQuantity);
             command.Parameters.AddWithValue("id", id);
             command.ExecuteNonQuery();

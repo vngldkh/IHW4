@@ -9,15 +9,29 @@ using System.Text.RegularExpressions;
 namespace IHW4.Controllers
 {
     /// <summary>
-    /// Контроллер пользователей.
+    /// Контроллер блюд.
     /// </summary>
     [ApiController]
     [Route("/api/[controller]")]
     public class DishController : Controller
     {
+        /// <summary>
+        /// Добавление нового блюда (доступно только менеджеру)
+        /// </summary>
+        /// <param name="name"> Название блюда (уникальное) </param>
+        /// <param name="description"> Описание блюда </param>
+        /// <param name="price"> Стоимость блюда </param>
+        /// <param name="quantity"> Количество </param>
+        /// <param name="token"> Токен текущей сессии </param>
+        /// <returns> Результат запроса </returns>
         [HttpPost("create/{token}")]
         public IActionResult Post(string name, string description, decimal price, int quantity, string token)
         {
+            if (name is null || description is null || token is null)
+            {
+                return new BadRequestObjectResult("Все текстовые поля должны быть заполнены");
+            }
+            
             Int64 res = AuthManager.CheckSession(token);
             if (res < 0 || AuthManager.GetUserInfo(res).Role != "manager")
             {
@@ -33,10 +47,22 @@ namespace IHW4.Controllers
             return new OkObjectResult("Блюдо было успешно добавлено");
         }
         
-       
+        /// <summary>
+        /// Изменение количества блюда (доступно только менеджеру)
+        /// </summary>
+        /// <param name="name"> Название блюда </param>
+        /// <param name="delta">
+        /// Величина изменения (положительная - увеличить объём, отрицательная - уменьшить)
+        /// </param>
+        /// <param name="token"> Токен текущей сессии </param>
+        /// <returns>  </returns>
         [HttpPost("change_quantity/{token}")]
-        public IActionResult Post(string name, int quantity, string token)
+        public IActionResult Post(string name, int delta, string token)
         {
+            if (name is null)
+            {
+                return new BadRequestObjectResult("Все текстовые поля должны быть заполнены");
+            }
             Int64 res = AuthManager.CheckSession(token);
             if (res < 0 || AuthManager.GetUserInfo(res).Role != "manager")
             {
@@ -49,7 +75,7 @@ namespace IHW4.Controllers
                 return new NotFoundObjectResult("Блюда с таким названием не найдено");
             }
             
-            int newQuantity = DishManager.ChangeQuantity(dishId, quantity);
+            int newQuantity = DishManager.ChangeQuantity(dishId, delta);
             return new OkObjectResult($"Блюдо было успешно обновлено. Количество установлено на {newQuantity}");
         }
         

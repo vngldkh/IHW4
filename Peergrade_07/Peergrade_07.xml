@@ -9,6 +9,11 @@
             Контроллер пользователей.
             </summary>
         </member>
+        <member name="T:IHW4.Controllers.OrdersController">
+            <summary>
+            Контроллер заказов.
+            </summary>
+        </member>
         <member name="T:IHW4.Controllers.UsersController">
             <summary>
             Контроллер пользователей.

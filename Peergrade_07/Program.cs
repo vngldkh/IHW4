@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IHW4.Controllers;
 using System.Data.SQLite;
+using System.Threading;
 
 namespace IHW4
 {
@@ -16,7 +17,9 @@ namespace IHW4
     {
         public static void Main(string[] args)
         {
-           
+            var processor = new OrdersProcessor();
+            var thread = new Thread(processor.Process);
+            thread.Start();
             CreateHostBuilder(args).Build().Run();
         }
 
