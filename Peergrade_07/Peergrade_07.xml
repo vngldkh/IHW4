@@ -6,13 +6,73 @@
     <members>
         <member name="T:IHW4.Controllers.DishController">
             <summary>
-            Контроллер пользователей.
+            Контроллер блюд.
             </summary>
+        </member>
+        <member name="M:IHW4.Controllers.DishController.Post(System.String,System.String,System.Decimal,System.Int32,System.String)">
+            <summary>
+            Добавление нового блюда (доступно только менеджеру)
+            </summary>
+            <param name="name"> Название блюда (уникальное) </param>
+            <param name="description"> Описание блюда </param>
+            <param name="price"> Стоимость блюда </param>
+            <param name="quantity"> Количество </param>
+            <param name="token"> Токен текущей сессии </param>
+            <returns> Результат запроса </returns>
+        </member>
+        <member name="M:IHW4.Controllers.DishController.Post(System.String,System.Int32,System.String)">
+            <summary>
+            Изменение количества блюда (доступно только менеджеру)
+            </summary>
+            <param name="name"> Название блюда </param>
+            <param name="delta">
+            Величина изменения (положительная - увеличить объём, отрицательная - уменьшить)
+            </param>
+            <param name="token"> Токен текущей сессии </param>
+            <returns>  </returns>
+        </member>
+        <member name="M:IHW4.Controllers.DishController.Post(System.String,System.String)">
+            <summary>
+            Удаление блюда (доступно только менеджеру)
+            </summary>
+            <param name="name"> Название блюда </param>
+            <param name="token"> Токен текущей сессии </param>
+            <returns> Результат запроса </returns>
+        </member>
+        <member name="M:IHW4.Controllers.DishController.Get(System.String,System.String)">
+            <summary>
+            Получение полной информации о блюде (доступно только менеджеру)
+            </summary>
+            <param name="name"> Название блюда </param>
+            <param name="token"> Токен текущей сессии </param>
+            <returns> Результат запроса </returns>
+        </member>
+        <member name="M:IHW4.Controllers.DishController.Get">
+            <summary>
+            Получение меню (списка всех доступных блюд)
+            </summary>
+            <returns> Меню </returns>
         </member>
         <member name="T:IHW4.Controllers.OrdersController">
             <summary>
             Контроллер заказов.
             </summary>
+        </member>
+        <member name="M:IHW4.Controllers.OrdersController.Post(System.String,System.Collections.Generic.ICollection{IHW4.Models.OrderItem},System.String)">
+            <summary>
+            Создание нового заказа
+            </summary>
+            <param name="token"> Токен текущей сессии </param>
+            <param name="dishes"> Список блюд (в JSON формате) </param>
+            <param name="specialRequests"> Особые пожелания </param>
+            <returns> Результат запроса </returns>
+        </member>
+        <member name="M:IHW4.Controllers.OrdersController.Get(System.Int64)">
+            <summary>
+            Получение информации о заказе по номеру
+            </summary>
+            <param name="id"> Номер заказа </param>
+            <returns> Результат запроса </returns>
         </member>
         <member name="T:IHW4.Controllers.UsersController">
             <summary>
@@ -33,7 +93,14 @@
             <summary>
             Авторизация пользователя
             </summary>
-            <returns> Результат запроса. </returns>
+            <returns> Результат запроса </returns>
+        </member>
+        <member name="M:IHW4.Controllers.UsersController.Get(System.String)">
+            <summary>
+            Получение информации о пользователе по токену
+            </summary>
+            <param name="sessionToken"> Токен текущей сессии </param>
+            <returns> Результат запроса </returns>
         </member>
         <member name="T:IHW4.Models.Dish">
             <summary>

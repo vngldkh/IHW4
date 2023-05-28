@@ -54,7 +54,7 @@ namespace IHW4.Controllers
         /// <summary>
         /// Авторизация пользователя
         /// </summary>
-        /// <returns> Результат запроса. </returns>
+        /// <returns> Результат запроса </returns>
         [HttpPost("login")]
         public IActionResult Post(String email, String password)
         {
@@ -84,6 +84,11 @@ namespace IHW4.Controllers
             return new BadRequestObjectResult("Не удалось создать сессию");
         }
 
+        /// <summary>
+        /// Получение информации о пользователе по токену
+        /// </summary>
+        /// <param name="sessionToken"> Токен текущей сессии </param>
+        /// <returns> Результат запроса </returns>
         [HttpGet("user_info/{sessionToken}")]
         public IActionResult Get(String sessionToken)
         {
