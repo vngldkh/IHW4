@@ -79,9 +79,19 @@ namespace IHW4.Controllers
             return new OkObjectResult($"Блюдо было успешно обновлено. Количество установлено на {newQuantity}");
         }
         
+        /// <summary>
+        /// Удаление блюда (доступно только менеджеру)
+        /// </summary>
+        /// <param name="name"> Название блюда </param>
+        /// <param name="token"> Токен текущей сессии </param>
+        /// <returns> Результат запроса </returns>
         [HttpPost("delete/{token}")]
         public IActionResult Post(string name, string token)
         {
+            if (name is null || token is null)
+            {
+                return new BadRequestObjectResult("Все поля должны быьт заполнены");
+            }
             Int64 res = AuthManager.CheckSession(token);
             if (res < 0 || AuthManager.GetUserInfo(res).Role != "manager")
             {
@@ -101,9 +111,19 @@ namespace IHW4.Controllers
             return new OkObjectResult($"Блюдо было успешно удалено");
         }
         
+        /// <summary>
+        /// Получение полной информации о блюде (доступно только менеджеру)
+        /// </summary>
+        /// <param name="name"> Название блюда </param>
+        /// <param name="token"> Токен текущей сессии </param>
+        /// <returns> Результат запроса </returns>
         [HttpGet("info/{token}")]
         public IActionResult Get(string name, string token)
         {
+            if (name is null || token is null)
+            {
+                return new BadRequestObjectResult("Все поля должны быьт заполнены");
+            }
             Int64 res = AuthManager.CheckSession(token);
             if (res < 0 || AuthManager.GetUserInfo(res).Role != "manager")
             {
@@ -124,6 +144,10 @@ namespace IHW4.Controllers
             return new OkObjectResult(dish);
         }
         
+        /// <summary>
+        /// Получение меню (списка всех доступных блюд)
+        /// </summary>
+        /// <returns> Меню </returns>
         [HttpGet("menu")]
         public IActionResult Get()
         {
