@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IHW4.Models
 {
@@ -14,15 +12,27 @@ namespace IHW4.Models
     [DataContract]
     public class Dish
     {
+        /// <summary>
+        /// Название блюда
+        /// </summary>
         [DataMember, Required]
         public string Name { get; set; }
         
+        /// <summary>
+        /// Описание блюда
+        /// </summary>
         [DataMember, Required]
         public string Description { get; set; }
 
+        /// <summary>
+        /// Стоимость блюда
+        /// </summary>
         [DataMember, Required]
         public decimal Price { get; set; }
         
+        /// <summary>
+        /// Количество
+        /// </summary>
         [DataMember, Required]
         public int Quantity { get; set; }
         
