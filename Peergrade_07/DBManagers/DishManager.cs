@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.IO;
 using IHW4.Models;
 using System.Data.SQLite;
-using System.Security.Cryptography;
-using System.Text;
 using System.Data;
 
 namespace IHW4
 {
+    /// <summary>
+    /// Класс-посредник для взаимодействия с таблицами БД, связанными с блюдами
+    /// </summary>
     public static class DishManager
     {
-        private static SQLiteConnection connection;
+        private static SQLiteConnection _connection;
         private static SQLiteCommand command;
 
 
@@ -22,8 +20,8 @@ namespace IHW4
         {
             try
             {
-                connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
-                connection.Open();
+                _connection = new SQLiteConnection("Data Source=" + fileName + ";Version=3; FailIfMissing=False");
+                _connection.Open();
                 return true;
             }
             catch (SQLiteException ex)
@@ -37,7 +35,7 @@ namespace IHW4
         {
             if (Connect("db.sqlite"))
             {
-                command = new SQLiteCommand(connection);
+                command = new SQLiteCommand(_connection);
                 command.CommandText = "CREATE TABLE IF NOT EXISTS dish (" +
                                       "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," + 
                                       "name VARCHAR(100) NOT NULL UNIQUE," +
@@ -50,6 +48,11 @@ namespace IHW4
             }
         }
         
+        /// <summary>
+        /// Создание нового блюда
+        /// </summary>
+        /// <param name="dish"> Информация о блюде </param>
+        /// <returns> Индикатор операции </returns>
         public static bool CreateDish(Dish dish)
         {
             command.CommandText = "INSERT INTO dish (name, description, price, quantity)" +
@@ -70,6 +73,11 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Поиск блюда по названию
+        /// </summary>
+        /// <param name="name"> Название блюда </param>
+        /// <returns> Идентификатор блюда (или -1, если оно не было найдено в таблице) </returns>
         public static Int64 FindDish(string name)
         {
             command.CommandText = "SELECT * FROM dish WHERE name = :name";
@@ -86,6 +94,12 @@ namespace IHW4
             return data.Select()[0].Field<Int64>("id");
         }
 
+        /// <summary>
+        /// Изменение количества блюда
+        /// </summary>
+        /// <param name="id"> Идентификатор блюда </param>
+        /// <param name="diff"> Величина изменения </param>
+        /// <returns> Итоговое количество блюда </returns>
         public static int ChangeQuantity(Int64 id, int diff)
         {
             command.CommandText = "SELECT * FROM dish WHERE id = :id";
@@ -109,6 +123,11 @@ namespace IHW4
             return newQuantity;
         }
         
+        /// <summary>
+        /// Удаление блюда
+        /// </summary>
+        /// <param name="id"> Идентификатор блюда </param>
+        /// <returns> Индикатор операции </returns>
         public static bool DeleteDish(Int64 id)
         {
             command.CommandText = "DELETE FROM dish WHERE id = :id";
@@ -125,6 +144,11 @@ namespace IHW4
             }
         }
 
+        /// <summary>
+        /// Получение информации о блюде
+        /// </summary>
+        /// <param name="id"> Идентификатор блюда </param>
+        /// <returns> Информация о блюде (или null, если оно не было найдено) </returns>
         public static Dish GetDishInfo(Int64 id)
         {
             command.CommandText = "SELECT * FROM dish WHERE id = :id";
@@ -145,6 +169,10 @@ namespace IHW4
                             data.Select()[0].Field<int>("quantity"));
         }
 
+        /// <summary>
+        /// Получение меню (списка доступных блюд)
+        /// </summary>
+        /// <returns> Список доступных блюд </returns>
         public static List<Dish> GetMenu()
         {
             command.CommandText = "SELECT * FROM dish WHERE quantity > 0";
