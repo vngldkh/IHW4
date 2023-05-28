@@ -11,10 +11,18 @@ using System.Text;
 
 namespace IHW4
 {
+    /// <summary>
+    /// Набор методов для хеширования пароля и его проверки
+    /// </summary>
     public static class Hasher
     {
         private static SHA256 sha256Hash = SHA256.Create();
 
+        /// <summary>
+        /// Хеширование пароля
+        /// </summary>
+        /// <param name="password"> Исходный пароль </param>
+        /// <returns> Хэш пароля </returns>
         public static String HashPassword(String password)
         {
             byte[] sourceBytes = Encoding.UTF8.GetBytes(password);
@@ -23,6 +31,12 @@ namespace IHW4
             return hash;
         }
 
+        /// <summary>
+        /// Проверка пароля
+        /// </summary>
+        /// <param name="password"> Полученный пароль </param>
+        /// <param name="hashedPassword"> Хэш верного пароля </param>
+        /// <returns> Результат проверки </returns>
         public static bool CheckPassword(String password, String hashedPassword)
         {
             byte[] sourceBytes = Encoding.UTF8.GetBytes(password);
