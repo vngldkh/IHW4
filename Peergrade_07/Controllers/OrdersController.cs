@@ -12,9 +12,20 @@ namespace IHW4.Controllers
     [Route("/api/[controller]")]
     public class OrdersController : Controller
     {
+        /// <summary>
+        /// Создание нового заказа
+        /// </summary>
+        /// <param name="token"> Токен текущей сессии </param>
+        /// <param name="dishes"> Список блюд (в JSON формате) </param>
+        /// <param name="specialRequests"> Особые пожелания </param>
+        /// <returns> Результат запроса </returns>
         [HttpPost("create/{token}")]
         public IActionResult Post(string token, ICollection<OrderItem> dishes, string specialRequests)
         {
+            if (dishes.Count == 0)
+            {
+                return new BadRequestObjectResult("Заказ не может быть пустым");
+            }
             Int64 userId = AuthManager.CheckSession(token);
             if (userId < 0)
             {
@@ -56,6 +67,11 @@ namespace IHW4.Controllers
             return new OkObjectResult($"Заказ №{orderId} успешно создан");
         }
 
+        /// <summary>
+        /// Получение информации о заказе по номеру
+        /// </summary>
+        /// <param name="id"> Номер заказа </param>
+        /// <returns> Результат запроса </returns>
         [HttpGet("get/{id}")]
         public IActionResult Get(Int64 id)
         {
