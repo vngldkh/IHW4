@@ -5,10 +5,19 @@ using Microsoft.AspNetCore.Routing.Matching;
 
 namespace IHW4
 {
+    /// <summary>
+    /// Обработчик заказов
+    /// </summary>
     public class OrdersProcessor
     {
+        /// <summary>
+        /// Список обрабатываемых заказов
+        /// </summary>
         private List<long> orderIds = new List<long>();
         
+        /// <summary>
+        /// Процесс обработки (работает в отдельном потоке)
+        /// </summary>
         public void Process()
         {
             while (true)
